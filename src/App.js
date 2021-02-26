@@ -1,24 +1,42 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState, useEffect } from 'react';
+import Blog from './components/Blog/Blog';
+import Header from './components/Header/Header';
+import { ThemeProvider } from 'styled-components';
+import { lightTheme, darkTheme } from './theme';
+import { GlobalStyles } from './global';
+import Footer from './components/Footer/Footer';
 
 function App() {
+  const [theme, setTheme] = useState('light');
+  const toggleTheme = () => {
+    // if the theme is not light, then set it to dark
+    if (theme === 'light') {
+      setTheme('dark');
+      // otherwise, it should be light
+    } else {
+      setTheme('light');
+    }
+  };
+
+  useEffect(() => {
+    const store = localStorage.getItem('theme') || [];
+    setTheme(JSON.parse(store));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('theme', JSON.stringify(theme));
+  }, [theme]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+      <GlobalStyles />
+      <div className='App'>
+        <Header theme={theme} toggleTheme={toggleTheme} />
+        <Blog theme={theme} />
+        <Footer />
+      </div>
+    </ThemeProvider>
   );
 }
 
